@@ -259,7 +259,7 @@ class QuickArgumentVisitor {
     uintptr_t outer_pc_offset = current_code->NativeQuickPcOffset(outer_pc);
 
     if (current_code->IsOptimized()) {
-      CodeInfo code_info(current_code, CodeInfo::DecodeFlags::InlineInfoOnly);
+      CodeInfo code_info = CodeInfo::DecodeInlineInfoOnly(current_code);
       StackMap stack_map = code_info.GetStackMapForNativePcOffset(outer_pc_offset);
       DCHECK(stack_map.IsValid());
       BitTableRange<InlineInfo> inline_infos = code_info.GetInlineInfosOf(stack_map);
@@ -852,12 +852,12 @@ extern "C" uint64_t artQuickProxyInvokeHandler(
   instrumentation::Instrumentation* instr = Runtime::Current()->GetInstrumentation();
   if (instr->HasMethodEntryListeners()) {
     instr->MethodEnterEvent(soa.Self(),
-                            soa.Decode<mirror::Object>(rcvr_jobj).Ptr(),
+                            soa.Decode<mirror::Object>(rcvr_jobj),
                             proxy_method,
                             0);
     if (soa.Self()->IsExceptionPending()) {
       instr->MethodUnwindEvent(self,
-                               soa.Decode<mirror::Object>(rcvr_jobj).Ptr(),
+                               soa.Decode<mirror::Object>(rcvr_jobj),
                                proxy_method,
                                0);
       return 0;
@@ -867,13 +867,13 @@ extern "C" uint64_t artQuickProxyInvokeHandler(
   if (soa.Self()->IsExceptionPending()) {
     if (instr->HasMethodUnwindListeners()) {
       instr->MethodUnwindEvent(self,
-                               soa.Decode<mirror::Object>(rcvr_jobj).Ptr(),
+                               soa.Decode<mirror::Object>(rcvr_jobj),
                                proxy_method,
                                0);
     }
   } else if (instr->HasMethodExitListeners()) {
     instr->MethodExitEvent(self,
-                           soa.Decode<mirror::Object>(rcvr_jobj).Ptr(),
+                           soa.Decode<mirror::Object>(rcvr_jobj),
                            proxy_method,
                            0,
                            result);

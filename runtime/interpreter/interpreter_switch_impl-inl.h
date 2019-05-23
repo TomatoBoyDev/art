@@ -353,7 +353,7 @@ class InstructionHandler {
     // We don't send method-exit if it's a pop-frame. We still send frame_popped though.
     if (UNLIKELY(instrumentation->HasMethodExitListeners() && !frame.GetForcePopFrame())) {
       had_event = true;
-      instrumentation->MethodExitEvent(self, thiz.Ptr(), method, dex_pc, result);
+      instrumentation->MethodExitEvent(self, thiz, method, dex_pc, result);
     }
     if (UNLIKELY(frame.NeedsNotifyPop() && instrumentation->HasWatchedFramePopListeners())) {
       had_event = true;
@@ -2623,11 +2623,6 @@ ATTRIBUTE_NO_SANITIZE_ADDRESS void ExecuteSwitchImplCpp(SwitchImplContext* ctx) 
   Thread* self = ctx->self;
   const CodeItemDataAccessor& accessor = ctx->accessor;
   ShadowFrame& shadow_frame = ctx->shadow_frame;
-  if (UNLIKELY(!shadow_frame.HasReferenceArray())) {
-    LOG(FATAL) << "Invalid shadow frame for interpreter use";
-    ctx->result = JValue();
-    return;
-  }
   self->VerifyStack();
 
   uint32_t dex_pc = shadow_frame.GetDexPC();
