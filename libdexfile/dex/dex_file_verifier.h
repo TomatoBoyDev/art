@@ -17,8 +17,8 @@
 #ifndef ART_LIBDEXFILE_DEX_DEX_FILE_VERIFIER_H_
 #define ART_LIBDEXFILE_DEX_DEX_FILE_VERIFIER_H_
 
+#include <bitset>
 #include <limits>
-#include <unordered_set>
 
 #include "base/hash_map.h"
 #include "base/safe_map.h"
@@ -206,6 +206,12 @@ class DexFileVerifier {
 
   void FindStringRangesForMethodNames();
 
+  template <typename ExtraCheckFn>
+  bool VerifyTypeDescriptor(dex::TypeIndex idx,
+                            const char* error_msg1,
+                            const char* error_msg2,
+                            ExtraCheckFn extra_check);
+
   const DexFile* const dex_file_;
   const uint8_t* const begin_;
   const size_t size_;
@@ -246,9 +252,6 @@ class DexFileVerifier {
 
   std::string failure_reason_;
 
-  // Set of type ids for which there are ClassDef elements in the dex file.
-  std::unordered_set<decltype(dex::ClassDef::class_idx_)> defined_classes_;
-
   // Cached string indices for "interesting" entries wrt/ method names. Will be populated by
   // FindStringRangesForMethodNames (which is automatically called before verifying the
   // classdataitem section).
@@ -262,6 +265,16 @@ class DexFileVerifier {
   size_t angle_bracket_end_index_;
   size_t angle_init_angle_index_;
   size_t angle_clinit_angle_index_;
+
+  // A bitvector for verified type descriptors. Each bit corresponds to a type index. A set
+  // bit denotes that the descriptor has been verified wrt/ IsValidDescriptor.
+  std::vector<char> verified_type_descriptors_;
+
+  // Set of type ids for which there are ClassDef elements in the dex file. Using a bitset
+  // avoids all allocations. The bitset should be implemented as 8K of storage, which is
+  // tight enough for all callers.
+  static constexpr size_t kTypeIdSize = 65536u;
+  std::bitset<kTypeIdSize> defined_classes_;
 };
 
 }  // namespace art
