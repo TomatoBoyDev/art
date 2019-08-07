@@ -865,6 +865,11 @@ CodeGenerator* OptimizingCompiler::TryCompile(ArenaAllocator* allocator,
                           MethodCompilationStat::kNotCompiledIrreducibleLoopAndStringInit);
           break;
         }
+        case kAnalysisFailPhiEquivalentInOsr: {
+          MaybeRecordStat(compilation_stats_.get(),
+                          MethodCompilationStat::kNotCompiledPhiEquivalentInOsr);
+          break;
+        }
         case kAnalysisSuccess:
           UNREACHABLE();
       }
