@@ -1096,6 +1096,14 @@ void CodeGenerator::RecordPcInfo(HInstruction* instruction,
                                  uint32_t dex_pc,
                                  SlowPathCode* slow_path,
                                  bool native_debug_info) {
+  RecordPcInfo(instruction, dex_pc, GetAssembler()->CodePosition(), slow_path, native_debug_info);
+}
+
+void CodeGenerator::RecordPcInfo(HInstruction* instruction,
+                                 uint32_t dex_pc,
+                                 uint32_t native_pc,
+                                 SlowPathCode* slow_path,
+                                 bool native_debug_info) {
   if (instruction != nullptr) {
     // The code generated for some type conversions
     // may call the runtime, thus normally requiring a subsequent
@@ -1118,9 +1126,6 @@ void CodeGenerator::RecordPcInfo(HInstruction* instruction,
       }
     }
   }
-
-  // Collect PC infos for the mapping table.
-  uint32_t native_pc = GetAssembler()->CodePosition();
 
   StackMapStream* stack_map_stream = GetStackMapStream();
   if (instruction == nullptr) {
@@ -1473,7 +1478,7 @@ bool CodeGenerator::CanMoveNullCheckToUser(HNullCheck* null_check) {
 void CodeGenerator::MaybeRecordImplicitNullCheck(HInstruction* instr) {
   HNullCheck* null_check = instr->GetImplicitNullCheck();
   if (null_check != nullptr) {
-    RecordPcInfo(null_check, null_check->GetDexPc());
+    RecordPcInfo(null_check, null_check->GetDexPc(), GetAssembler()->CodePosition());
   }
 }
 
