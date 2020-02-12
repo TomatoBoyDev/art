@@ -11,8 +11,8 @@ msg() {
 ANDROID_ROOT="/system"
 ANDROID_RUNTIME_ROOT="/apex/com.android.runtime"
 ANDROID_TZDATA_ROOT="/apex/com.android.tzdata"
-ARCHITECTURES_32="(arm|x86|mips|none)"
-ARCHITECTURES_64="(arm64|x86_64|mips64|none)"
+ARCHITECTURES_32="(arm|x86|none)"
+ARCHITECTURES_64="(arm64|x86_64|none)"
 ARCHITECTURES_PATTERN="${ARCHITECTURES_32}"
 BOOT_IMAGE=""
 CHROOT=

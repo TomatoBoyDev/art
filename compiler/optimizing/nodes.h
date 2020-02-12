@@ -1498,17 +1498,6 @@ class HLoopInformationOutwardIterator : public ValueObject {
 
 #define FOR_EACH_CONCRETE_INSTRUCTION_ARM64(M)
 
-#ifndef ART_ENABLE_CODEGEN_mips
-#define FOR_EACH_CONCRETE_INSTRUCTION_MIPS(M)
-#else
-#define FOR_EACH_CONCRETE_INSTRUCTION_MIPS(M)                           \
-  M(MipsComputeBaseMethodAddress, Instruction)                          \
-  M(MipsPackedSwitch, Instruction)                                      \
-  M(IntermediateArrayAddressIndex, Instruction)
-#endif
-
-#define FOR_EACH_CONCRETE_INSTRUCTION_MIPS64(M)
-
 #ifndef ART_ENABLE_CODEGEN_x86
 #define FOR_EACH_CONCRETE_INSTRUCTION_X86(M)
 #else
@@ -1534,8 +1523,6 @@ class HLoopInformationOutwardIterator : public ValueObject {
   FOR_EACH_CONCRETE_INSTRUCTION_SHARED(M)                               \
   FOR_EACH_CONCRETE_INSTRUCTION_ARM(M)                                  \
   FOR_EACH_CONCRETE_INSTRUCTION_ARM64(M)                                \
-  FOR_EACH_CONCRETE_INSTRUCTION_MIPS(M)                                 \
-  FOR_EACH_CONCRETE_INSTRUCTION_MIPS64(M)                               \
   FOR_EACH_CONCRETE_INSTRUCTION_X86(M)                                  \
   FOR_EACH_CONCRETE_INSTRUCTION_X86_64(M)                               \
   FOR_EACH_CONCRETE_INSTRUCTION_X86_COMMON(M)
@@ -7281,7 +7268,7 @@ class HInstanceOf final : public HTypeCheckInstruction {
   }
 
   static bool CanCallRuntime(TypeCheckKind check_kind) {
-    // Mips currently does runtime calls for any other checks.
+    // TODO: Re-evaluate now that mips codegen has been removed.
     return check_kind != TypeCheckKind::kExactCheck;
   }
 
@@ -7847,9 +7834,6 @@ class HIntermediateAddress final : public HExpression<2> {
 
 #if defined(ART_ENABLE_CODEGEN_arm) || defined(ART_ENABLE_CODEGEN_arm64)
 #include "nodes_shared.h"
-#endif
-#ifdef ART_ENABLE_CODEGEN_mips
-#include "nodes_mips.h"
 #endif
 #if defined(ART_ENABLE_CODEGEN_x86) || defined(ART_ENABLE_CODEGEN_x86_64)
 #include "nodes_x86.h"
